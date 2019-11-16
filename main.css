@@ -1,0 +1,19 @@
+*, *::before, *::after {
+    user-select: none;
+}
+
+body {
+    text-align: center;
+    font-size: 10.9vmax;
+    background-color: #fdf6e3;
+    color: #002b36;
+}
+
+.grid {
+    height: 100vh;
+}
+
+i {
+    display: inline-block;
+    min-width: 16.66%;
+}
