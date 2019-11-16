@@ -4,13 +4,14 @@
 
 body {
     text-align: center;
-    font-size: 10.9vmax;
+    font-size: 10.5vmax;
     background-color: #fdf6e3;
     color: #002b36;
 }
 
 .grid {
     height: 100vh;
+    overflow: hidden;
 }
 
 i {
