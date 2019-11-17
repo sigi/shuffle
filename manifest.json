@@ -4,37 +4,37 @@
     "description": "Deal a bridge game without shuffling.",
     "icons": [
         {
-            "src": "./icons/shuffle_48x48.png",
+            "src": "icons/shuffle_48x48.png",
             "type": "image/png",
             "sizes": "48x48"
         },
         {
-            "src": "./icons/shuffle_72x72.png",
+            "src": "icons/shuffle_72x72.png",
             "type": "image/png",
             "sizes": "72x72"
         },
         {
-            "src": "./icons/shuffle_96x96.png",
+            "src": "icons/shuffle_96x96.png",
             "type": "image/png",
             "sizes": "96x96"
         },
         {
-            "src": "./icons/shuffle_144x144.png",
+            "src": "icons/shuffle_144x144.png",
             "type": "image/png",
             "sizes": "144x144"
         },
         {
-            "src": "./icons/shuffle_192x192.png",
+            "src": "icons/shuffle_192x192.png",
             "type": "image/png",
             "sizes": "192x192"
         },
         {
-            "src": "./icons/shuffle_512x512.png",
+            "src": "icons/shuffle_512x512.png",
             "type": "image/png",
             "sizes": "512x512"
         }
     ],
-    "start_url": "./index.html",
+    "start_url": "index.html",
     "background_color": "#fdf6e3",
     "display": "fullscreen",
     "orientation": "portrait",
