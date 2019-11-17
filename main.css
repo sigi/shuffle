@@ -5,7 +5,7 @@
 
 html {
     height: 100%;
-    font-size: 6vh;
+    font-size: 5.5vmax;
     background-color: #fdf6e3;
     color: #002b36;
 }
@@ -13,28 +13,22 @@ html {
 body {
     height: 100%;
     overflow: hidden;
-    /* vertical centering of the content area */
-    display: flex;
-    align-items: center;
 }
 
 .grid {
+    display: grid;
+    grid-template-rows: repeat(9, 1fr);
+    grid-template-columns: repeat(6, 1fr);
+    height: 100%;
+    width: 100%;
     overflow: hidden;
-    text-align: center;
 }
 
 i {
-    width: 16.4%; /* 6 items per row */
-    height: 11.1vh;
-    margin-right: -1px; /* avoids gaps caused by rounding errors */
+    /* Arrows centered in their boxes */
     display: inline-flex;
     align-items: center;
     justify-content: center;
-}
-
-i:nth-child(6n+0) {
-    /* the last item in each row */
-    margin: 0;
 }
 
 i.stripe {
