@@ -8,4 +8,4 @@ With some practice you can deal a deck just as fast as mechanically possible, wi
 
 Truly randomizing a deck by shuffling requires 6-7 typical "riffle shuffles", which takes at least half a minute and is quite tiring.  Many people do not do this, and you end up with badly shuffled deals in your tournament.
 
-This little helper avoids this situation.
+This little helper avoids that situation.

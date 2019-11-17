@@ -1,20 +1,32 @@
 *, *::before, *::after {
     user-select: none;
+    box-sizing: border-box;
 }
 
-body {
-    text-align: center;
-    font-size: 10.5vmax;
+html {
+    height: 100%;
+    font-size: 10.8vmax;
     background-color: #fdf6e3;
     color: #002b36;
 }
 
+body {
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+}
+
 .grid {
-    height: 100vh;
     overflow: hidden;
 }
 
 i {
+    text-align: center;
     display: inline-block;
     min-width: 16.66%;
+}
+
+i.stripe {
+    background-color: #e9e1c9;
 }

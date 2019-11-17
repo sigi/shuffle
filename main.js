@@ -20,7 +20,13 @@ const randomDeal = () => shuffle(new Array(52)
 
 class Arrow {
     constructor() { this.el = el('i') }
-    update(data) { setAttr(this.el, { className: data }) }
+    update(data, index) {
+        setAttr(this.el, { className: data })
+        // Zebra striping (we draw 6 items per line, scaled per CSS)
+        if ((index / 6 | 0) % 2 == 1) {
+            this.el.classList.add('stripe')
+        }
+    }
 }
 
 const grid = list('.grid', Arrow)
