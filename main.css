@@ -5,7 +5,7 @@
 
 html {
     height: 100%;
-    font-size: 10.8vmax;
+    font-size: 6vh;
     background-color: #fdf6e3;
     color: #002b36;
 }
@@ -13,18 +13,28 @@ html {
 body {
     height: 100%;
     overflow: hidden;
+    /* vertical centering of the content area */
     display: flex;
     align-items: center;
 }
 
 .grid {
     overflow: hidden;
+    text-align: center;
 }
 
 i {
-    text-align: center;
-    display: inline-block;
-    min-width: 16.66%;
+    width: 16.6%; /* 6 items per row */
+    height: 11vh;
+    margin-right: -1px; /* avoids gaps caused by rounding errors */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+i:nth-child(6n+0) {
+    /* the last item in each row */
+    margin: 0;
 }
 
 i.stripe {

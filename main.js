@@ -13,18 +13,18 @@ const shuffle = (a) => {
 }
 
 const randomDeal = () => shuffle(new Array(52)
-                           .fill('ion-ios-arrow-round-up', 0, 13)
-                           .fill('ion-ios-arrow-round-down', 13, 26)
-                           .fill('ion-ios-arrow-round-forward', 26, 39)
-                           .fill('ion-ios-arrow-round-back', 39))
+                           .fill('up', 0, 13)
+                           .fill('down', 13, 26)
+                           .fill('left', 26, 39)
+                           .fill('right', 39))
 
 class Arrow {
     constructor() { this.el = el('i') }
     update(data, index) {
-        setAttr(this.el, { className: data })
-        // Zebra striping (we draw 6 items per line, scaled per CSS)
+        this.el.textContent = data
+        // Zebra striping (item count per line is implicit from styling)
         if ((index / 6 | 0) % 2 == 1) {
-            this.el.classList.add('stripe')
+            setAttr(this.el, { className: 'stripe' })
         }
     }
 }

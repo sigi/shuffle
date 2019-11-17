@@ -4,14 +4,14 @@
         <meta charset="UTF-8">
         <title>Shuffle</title>
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="manifest" href="./manifest.json">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.5.6/css/ionicons.min.css">
+        <link rel="manifest" href="manifest.json">
+        <link rel="stylesheet" href="vendor/reset.min.css">
+        <link rel="stylesheet" href="arrows.css">
         <link rel="stylesheet" href="main.css">
     </head>
     <body translate="no">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/redom/3.24.1/redom.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.0/screenfull.min.js"></script>
+        <script src="vendor/redom.min.js"></script>
+        <script src="vendor/screenfull.min.js"></script>
         <script>
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'))
