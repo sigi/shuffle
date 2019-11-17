@@ -26,20 +26,40 @@ self.addEventListener('message', (event) => {
  */
 self.__precacheManifest = [
   {
+    "url": "arrows.css",
+    "revision": "8d46dd42b5fe5c208896865cae77e811"
+  },
+  {
+    "url": "arrows.woff",
+    "revision": "76e65c8f2ce6b3e1e26523931add1efe"
+  },
+  {
     "url": "index.html",
-    "revision": "845a1d2174c36ada26382302cc165a2a"
+    "revision": "deb4d94f87de5ff735c453010e9770da"
   },
   {
     "url": "main.css",
-    "revision": "d85d4b294f0e0f22f12ce55ea74e737a"
+    "revision": "d83bf065b36e5e7cc72aa38cdad085b0"
   },
   {
     "url": "main.js",
-    "revision": "0ff37aa8e219f980d6dcf208be4982bd"
+    "revision": "d1d0ebb91b4365a273c6d5133e13e822"
+  },
+  {
+    "url": "vendor/redom.min.js",
+    "revision": "951dfdebf112b555d7a152df82d60f7f"
+  },
+  {
+    "url": "vendor/reset.min.css",
+    "revision": "93e42565f156d067f72108759177a957"
+  },
+  {
+    "url": "vendor/screenfull.min.js",
+    "revision": "b9874ca6066a9ef1a46c75edd8313353"
   },
   {
     "url": "workbox-config.js",
-    "revision": "518f9ae1919577dcddc2f81910c66047"
+    "revision": "d6c89d7b52004d2e2da2d4d8e6454a0d"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
