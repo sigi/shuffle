@@ -24,8 +24,8 @@ body {
 }
 
 i {
-    width: 16.6%; /* 6 items per row */
-    height: 11vh;
+    width: 16.4%; /* 6 items per row */
+    height: 11.1vh;
     margin-right: -1px; /* avoids gaps caused by rounding errors */
     display: inline-flex;
     align-items: center;
