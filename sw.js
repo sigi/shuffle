@@ -35,7 +35,7 @@ self.__precacheManifest = [
   },
   {
     "url": "index.html",
-    "revision": "35b807ad8ffebbc92012c2f234bb079e"
+    "revision": "ed822cfd63aa753c50fdcf694fd19683"
   },
   {
     "url": "main.css",
@@ -56,6 +56,10 @@ self.__precacheManifest = [
   {
     "url": "vendor/screenfull.min.js",
     "revision": "b9874ca6066a9ef1a46c75edd8313353"
+  },
+  {
+    "url": "icons/favicon_32x32.png",
+    "revision": "c1a9e5371901f08f9eae29bb2c908554"
   }
 ].concat(self.__precacheManifest || []);
 workbox.precaching.precacheAndRoute(self.__precacheManifest, {});

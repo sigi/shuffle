@@ -1,7 +1,11 @@
 module.exports = {
   "globDirectory": ".",
   "globPatterns": [
-    "**/!(workbox-config)\.{html,css,js,woff}"
+    "**/*.{html,css,js,woff}",
+    "**/favicon*"
+  ],
+  "globIgnores": [
+    "workbox-config.js"
   ],
   "swDest": "sw.js"
 };
