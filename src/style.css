@@ -1,5 +1,5 @@
-@import "../vendor/reset.min.css";
-@import "../arrows.css";
+@import "./assets/reset.min.css";
+@import "./assets/arrows.css";
 
 *,
 *::before,
