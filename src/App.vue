@@ -1,19 +1,19 @@
 <script setup>
-import { ref } from "vue";
-import screenfull from "screenfull";
-import { useArrowsStore } from "./stores/arrows";
+import { ref } from "vue"
+import screenfull from "screenfull"
+import { useArrowsStore } from "./stores/arrows"
 
-const arrows = useArrowsStore();
-const firstTap = ref(true);
+const arrows = useArrowsStore()
+const firstTap = ref(true)
 
 function handleTap() {
   if (firstTap.value) {
-    firstTap.value = false;
-    if (screenfull.isEnabled) void screenfull.request().catch(() => {});
-    return;
+    firstTap.value = false
+    if (screenfull.isEnabled) void screenfull.request().catch(() => {})
+    return
   }
 
-  arrows.regenerate();
+  arrows.regenerate()
 }
 </script>
 
