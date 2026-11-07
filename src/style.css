@@ -1,0 +1,45 @@
+@import "../vendor/reset.min.css";
+@import "../arrows.css";
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+html {
+  height: 100vh;
+  font-size: 10vmin;
+  color: #002b36;
+  touch-action: manipulation;
+}
+
+body {
+  background-color: #e9e1c9;
+}
+
+.arrow-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(1.5rem, 1fr));
+  grid-row-gap: 0.1rem;
+  overflow: hidden;
+}
+
+i {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #fdf6e3;
+}
