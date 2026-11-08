@@ -17,6 +17,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.10",
+    "peggy": "^4.2.0",
     "slug": "12.0.1",
     "unocss": "^66.12.0",
     "vite": "catalog:",

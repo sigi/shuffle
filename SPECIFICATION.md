@@ -198,8 +198,8 @@ The following JSON Schema defines the structural contract. The app/build validat
       "required": ["boardNumber", "dealer", "vulnerability", "owners"],
       "properties": {
         "boardNumber": { "type": "integer", "minimum": 1, "maximum": 64 },
-        "dealer": { "type": "integer", "minimum": 0, "maximum": 3 },
-        "vulnerability": { "type": "integer", "minimum": 0, "maximum": 3 },
+        "dealer": { "type": "string", "enum": ["N", "E", "S", "W"] },
+        "vulnerability": { "type": "string", "enum": ["O", "N", "E", "B"] },
         "owners": {
           "type": "string",
           "minLength": 52,
@@ -218,8 +218,8 @@ Example board object (the `owners` string has all 52 characters):
 ```json
 {
   "boardNumber": 1,
-  "dealer": 0,
-  "vulnerability": 0,
+  "dealer": "N",
+  "vulnerability": "O",
   "owners": "0000000000000111111111111122222222222223333333333333",
   "metadata": {}
 }
@@ -234,8 +234,8 @@ Example board object (the `owners` string has all 52 characters):
 - `metadata`: optional JSON object for future set-level metadata. Defaults to `{}` when absent.
 - `boards`: required array, ordered by ascending board number.
 - `boardNumber`: required integer in `1..64`. Board numbers in each set must be exactly contiguous from 1 through the number of boards in that set.
-- `dealer`: required integer direction code: `0=N`, `1=E`, `2=S`, `3=W`.
-- `vulnerability`: required integer: `0=None`, `1=NS`, `2=EW`, `3=Both`.
+- `dealer`: required compass direction character: `N`, `E`, `S`, or `W`.
+- `vulnerability`: required character: `O` (none), `N` (NS), `E` (EW), or `B` (both).
 - `owners`: required string of exactly 52 characters, each in `0..3`. Character `0` means North, `1` East, `2` South, and `3` West. Each character occurs exactly 13 times. Character index 0 corresponds to ♣2, index 51 to ♠A, and each character gives that card's compass hand.
 - `metadata`: optional JSON object for future board-level metadata. Defaults to `{}` when absent.
 
