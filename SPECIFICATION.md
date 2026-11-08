@@ -144,7 +144,7 @@ The positive modulo form is intentional for JavaScript implementations where `%`
 
 ### 5.3 Arrow assignment
 
-Each generated board contains one owner code for each canonical card index. The arrow for draw position `k` is the direction that owns the card at the above computed index. Each hand must receive exactly 13 cards, producing exactly 13 arrows of each direction.
+Each generated board contains an `owners` string with one owner code for each canonical card index. The arrow for draw position `k` is the direction that owns the card at the above computed index. Each hand must receive exactly 13 cards, producing exactly 13 arrows of each direction.
 
 The board's duplicate-bridge dealer does not affect the sequence. Dealer and vulnerability metadata are for board labeling and future features only.
 
@@ -201,10 +201,10 @@ The following JSON Schema defines the structural contract. The app/build validat
         "dealer": { "type": "integer", "minimum": 0, "maximum": 3 },
         "vulnerability": { "type": "integer", "minimum": 0, "maximum": 3 },
         "owners": {
-          "type": "array",
-          "minItems": 52,
-          "maxItems": 52,
-          "items": { "type": "integer", "minimum": 0, "maximum": 3 }
+          "type": "string",
+          "minLength": 52,
+          "maxLength": 52,
+          "pattern": "^[0-3]{52}$"
         },
         "metadata": { "$ref": "#/$defs/metadata" }
       }
@@ -213,19 +213,14 @@ The following JSON Schema defines the structural contract. The app/build validat
 }
 ```
 
-Example board object (the `owners` list has all 52 entries):
+Example board object (the `owners` string has all 52 characters):
 
 ```json
 {
   "boardNumber": 1,
   "dealer": 0,
   "vulnerability": 0,
-  "owners": [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-    2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-    3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3
-  ],
+  "owners": "0000000000000111111111111122222222222223333333333333",
   "metadata": {}
 }
 ```
@@ -241,7 +236,7 @@ Example board object (the `owners` list has all 52 entries):
 - `boardNumber`: required integer in `1..64`. Board numbers in each set must be exactly contiguous from 1 through the number of boards in that set.
 - `dealer`: required integer direction code: `0=N`, `1=E`, `2=S`, `3=W`.
 - `vulnerability`: required integer: `0=None`, `1=NS`, `2=EW`, `3=Both`.
-- `owners`: required array of exactly 52 integers. Each value is one of `0=N`, `1=E`, `2=S`, `3=W`; each code occurs exactly 13 times. Index 0 means ♣2, index 51 means ♠A. The entry at each index is the compass hand holding that card.
+- `owners`: required string of exactly 52 characters, each in `0..3`. Character `0` means North, `1` East, `2` South, and `3` West. Each character occurs exactly 13 times. Character index 0 corresponds to ♣2, index 51 to ♠A, and each character gives that card's compass hand.
 - `metadata`: optional JSON object for future board-level metadata. Defaults to `{}` when absent.
 
 Dealer and vulnerability use duplicate-bridge board conventions. Dealer repeats N, E, S, W by board number. Vulnerability repeats every 16 boards in this sequence, with index 1 corresponding to board 1:
