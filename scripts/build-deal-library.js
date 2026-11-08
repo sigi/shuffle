@@ -8,47 +8,40 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const sourceDir = resolve(root, "deal-sets")
 const outputPath = resolve(root, "public/deal-library.json")
 const grammarPath = resolve(root, "scripts/pbn.peggy")
-const cardRanks = "23456789TJQKA"
-const suits = ["S", "H", "D", "C"]
-const canonicalSuitIndex = { C: 0, D: 1, H: 2, S: 3 }
-const directions = ["N", "E", "S", "W"]
-const vulnerabilities = [0, 1, 2, 3, 1, 2, 3, 0, 2, 3, 0, 1, 3, 0, 1, 2]
 
+// Adds source context to generator errors.
 function fail(file, message) {
   throw new Error(`${file}: ${message}`)
 }
 
-function parseDeal(deal, file) {
+// Validates normalized hands and encodes each canonical card's compass owner.
+function ownersForDeal(hands, file) {
   const owners = Array(52).fill(-1)
-  const firstPosition = directions.indexOf(deal.direction)
-  const hands = deal.hands.filter(Boolean)
-  if (hands.length < 3) fail(file, `Deal has ${hands.length} hands, expected at least 3`)
-  const missingPosition = hands.length === 3 ? (firstPosition + 3) % 4 : -1
-
-  hands.forEach((hand, handIndex) => {
-    const position = (firstPosition + handIndex) % 4
-    const suitFields = hand.split(".")
+  hands.forEach((hand, position) => {
+    if (hand.length === 0) return
     let cardCount = 0
-    for (let suitIndex = 0; suitIndex < suits.length; suitIndex += 1) {
-      const suit = suits[suitIndex]
-      for (const rank of suitFields[suitIndex]) {
-        const rankIndex = cardRanks.indexOf(rank)
-        const cardIndex = canonicalSuitIndex[suit] * 13 + rankIndex
-        if (owners[cardIndex] !== -1) fail(file, `duplicate card ${suit}${rank}`)
+    hand.forEach((suit, suitIndex) => {
+      for (const card of suit) {
+        const cardIndex = suitIndex * 13 + card
+        if (owners[cardIndex] !== -1) {
+          fail(file, `duplicate card ${"CDHS"[suitIndex]}${card}`)
+        }
         owners[cardIndex] = position
         cardCount += 1
       }
-    }
+    })
     if (cardCount !== 13) {
-      fail(file, `${directions[position]} hand has ${cardCount} cards, expected 13`)
+      fail(file, `${"NESW"[position]} hand has ${cardCount} cards, expected 13`)
     }
   })
 
+  const missingPosition = hands.findIndex((hand) => hand.length === 0)
   return owners.map((owner) => owner === -1 ? missingPosition : owner).join("")
 }
 
 let parserPromise
 
+// Runs the Peggy grammar, validates set-level constraints, and builds one JSON set.
 async function parseSet(text, file) {
   parserPromise ??= readFile(grammarPath, "utf8").then((grammar) => peggy.generate(grammar))
   const parser = await parserPromise
@@ -67,9 +60,9 @@ async function parseSet(text, file) {
     boardNumbers.add(boardNumber)
     boards.push({
       boardNumber,
-      dealer: (boardNumber - 1) % 4,
-      vulnerability: vulnerabilities[(boardNumber - 1) % 16],
-      owners: parseDeal(section.deal, file),
+      dealer: "NESW"[(boardNumber - 1) % 4],
+      vulnerability: "ONEBNEBOEBONBONE"[(boardNumber - 1) % 16],
+      owners: ownersForDeal(section.deal, file),
     })
   }
   boards.sort((a, b) => a.boardNumber - b.boardNumber)
@@ -85,6 +78,7 @@ async function parseSet(text, file) {
   return { setId, name: eventName, boards }
 }
 
+// Merges parsed source sets into the existing generated deal-library file.
 export async function buildDealLibrary() {
   const sourceFiles = (await readdir(sourceDir, { withFileTypes: true }))
     .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".pbn"))
