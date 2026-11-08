@@ -7,6 +7,8 @@ This application uses Vue, Pinia, Vite+, UnoCSS, and Workbox.
 - `vp dev` starts the development server.
 - `vp build` creates the production build and Workbox service worker.
 - `vp preview` serves the production build locally.
+- Add one PBN file per session to `deal-sets/`. The Vite config validates and merges these into `public/deal-library.json` before serving or building.
+- `vp run build:deals` runs only the deal-library generator.
 
 Vite+ manages the project toolchain and package manager. Run `vp install` after changing dependencies.
 

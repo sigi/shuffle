@@ -2,6 +2,9 @@ import vue from "@vitejs/plugin-vue"
 import UnoCSS from "unocss/vite"
 import { VitePWA } from "vite-plugin-pwa"
 import { defineConfig, lazyPlugins } from "vite-plus"
+import { buildDealLibrary } from "./scripts/build-deal-library.js"
+
+await buildDealLibrary()
 
 // https://vite.dev/config/
 export default defineConfig({
