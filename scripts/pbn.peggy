@@ -107,7 +107,7 @@ IgnoredLine
 
 OtherTag
   // Accept unrelated PBN metadata and discard it.
-  = "[" _ !("Event"i / "Board"i / "Deal"i) [A-Za-z] [A-Za-z0-9_]* _ '"' TagString '"' _ "]" LineEnd {
+  = "[" _ !( ("Event"i / "Board"i / "Deal"i) ![A-Za-z0-9_] ) [A-Za-z] [A-Za-z0-9_]* _ '"' TagString '"' _ "]" LineEnd {
       return null
     }
 
@@ -117,7 +117,7 @@ CommentLine
 
 FreeTextLine
   // Ignore ordinary lines, but prevent malformed relevant tags falling through here.
-  = !("[" _ ("Event"i / "Board"i / "Deal"i)) (!LineBreak .)+ LineEnd { return null }
+  = !("[" _ ("Event"i / "Board"i / "Deal"i) ![A-Za-z0-9_]) (!LineBreak .)+ LineEnd { return null }
 
 BlankLine
   = HorizontalSpace* LineBreak
