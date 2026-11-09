@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev",
-    "build": "vp build",
+    "build": "node scripts/build-deal-library.js && vp build",
     "build:deals": "node scripts/build-deal-library.js",
     "preview": "vp preview"
   },

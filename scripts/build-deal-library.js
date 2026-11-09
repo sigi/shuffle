@@ -42,8 +42,8 @@ function ownersForDeal(hands, file) {
 let parserPromise
 
 // Runs the Peggy grammar, validates set-level constraints, and builds one JSON set.
-async function parseSet(text, file) {
-  parserPromise ??= readFile(grammarPath, "utf8").then((grammar) => peggy.generate(grammar))
+export async function parseSet(text, file = "<input>", grammarFile = grammarPath) {
+  parserPromise ??= readFile(grammarFile, "utf8").then((grammar) => peggy.generate(grammar))
   const parser = await parserPromise
   let parsed
   try {
@@ -79,15 +79,15 @@ async function parseSet(text, file) {
 }
 
 // Merges parsed source sets into the existing generated deal-library file.
-export async function buildDealLibrary() {
-  const sourceFiles = (await readdir(sourceDir, { withFileTypes: true }))
+export async function buildDealLibrary({ sourceDir: inputDir = sourceDir, outputPath: targetPath = outputPath, grammarPath: inputGrammar = grammarPath } = {}) {
+  const sourceFiles = (await readdir(inputDir, { withFileTypes: true }))
     .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".pbn"))
     .map((entry) => entry.name)
     .sort((a, b) => a.localeCompare(b, "en"))
 
   let existing = { schemaVersion: 1, sets: [] }
   try {
-    existing = JSON.parse(await readFile(outputPath, "utf8"))
+    existing = JSON.parse(await readFile(targetPath, "utf8"))
   } catch (error) {
     if (error.code !== "ENOENT")
       throw new Error(`Cannot read existing deal library: ${error.message}`)
@@ -107,8 +107,8 @@ export async function buildDealLibrary() {
 
   const sourceSetIds = new Set()
   for (const filename of sourceFiles) {
-    const file = resolve(sourceDir, filename)
-    const set = await parseSet(await readFile(file, "utf8"), filename)
+    const file = resolve(inputDir, filename)
+    const set = await parseSet(await readFile(file, "utf8"), filename, inputGrammar)
     if (sourceSetIds.has(set.setId))
       throw new Error(`${filename}: duplicate setId ${set.setId} from source files`)
     sourceSetIds.add(set.setId)
@@ -119,7 +119,7 @@ export async function buildDealLibrary() {
     schemaVersion: 1,
     sets: [...setsById.values()].sort((a, b) => a.setId.localeCompare(b.setId, "en")),
   }
-  await writeFile(outputPath, `${JSON.stringify(output, null, 2)}\n`)
+  await writeFile(targetPath, `${JSON.stringify(output, null, 2)}\n`)
   return output
 }
 
