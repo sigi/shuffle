@@ -1,3 +1,4 @@
+// Parses PBN deal sets and merges their generated library into the application assets.
 import { readdir, readFile, writeFile } from "node:fs/promises"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
@@ -41,7 +42,13 @@ function ownersForDeal(hands, file) {
 
 let parserPromise
 
-// Runs the Peggy grammar, validates set-level constraints, and builds one JSON set.
+/**
+ * Parses one PBN document with the Peggy grammar, validates set constraints, and builds its JSON set.
+ * @param {string} text PBN document contents.
+ * @param {string} [file="<input>"] Source name used in diagnostic messages.
+ * @param {string} [grammarFile=grammarPath] Peggy grammar file path.
+ * @returns {Promise<{setId: string, name: string, boards: object[]}>} Parsed deal set.
+ */
 export async function parseSet(text, file = "<input>", grammarFile = grammarPath) {
   parserPromise ??= readFile(grammarFile, "utf8").then((grammar) => peggy.generate(grammar))
   const parser = await parserPromise
@@ -78,7 +85,14 @@ export async function parseSet(text, file = "<input>", grammarFile = grammarPath
   return { setId, name: eventName, boards }
 }
 
-// Merges parsed source sets into the existing generated deal-library file.
+/**
+ * Parses all PBN sources and merges their sets into the generated deal-library file.
+ * @param {object} [options] Optional paths for isolated builds and tests.
+ * @param {string} [options.sourceDir=sourceDir] Directory containing source PBN files.
+ * @param {string} [options.outputPath=outputPath] Destination JSON file path.
+ * @param {string} [options.grammarPath=grammarPath] Peggy grammar file path.
+ * @returns {Promise<{schemaVersion: number, sets: object[]}>} The merged library.
+ */
 export async function buildDealLibrary({ sourceDir: inputDir = sourceDir, outputPath: targetPath = outputPath, grammarPath: inputGrammar = grammarPath } = {}) {
   const sourceFiles = (await readdir(inputDir, { withFileTypes: true }))
     .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith(".pbn"))
