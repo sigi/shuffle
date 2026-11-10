@@ -31,6 +31,9 @@ The application does not fetch deal data from user-entered URLs and has no exter
 - **Touched session:** A session for which at least one board has been marked completed.
 - **Active session / board:** The session or board currently selected for work. Selection alone does not mark a session touched or a board completed.
 - Directions are clockwise: North, East, South, West. An up arrow means North; right means East; down means South; left means West.
+- **Handler (H):** The person who lays out cards face down according to the displayed arrow pattern.
+- **Assistant (A):** The person who finds the cutting card C and cuts the sorted deck below it. The assistant must not observe the subsequent dealing.
+- **Board dealer:** The duplicate-bridge dealer derived from the board number. This metadata is unrelated to the table protocol; the board dealer and handler may be the same person or different people. Neither handler nor assistant need be a player.
 
 ## 4. Application modes and screens
 
@@ -70,19 +73,19 @@ The app must not expose URL loading or upload controls.
 - Selecting a different board abandons any prior board workflow. It does not change prior completion state.
 - The screen provides an explicit action to return Home. This is distinct from native back navigation.
 
-### 4.5 Cutter screen
+### 4.5 Assistant screen
 
 - Show the active session name and board number.
-- Provide an action for the cutter to reveal a cutting card C. Select C uniformly from the 52 cards on each reveal request, using a simple random draw; cryptographic randomness is not required.
-- C may be refreshed if it was shown to the designated dealer. Refreshing C replaces the prior cut target. Any arrows previously generated for the old C must not be reused.
-- The cutter performs the physical cut described in section 5.
-- After the physical cut, the cutter confirms the cut. This advances to the handoff screen.
+- Provide an action for the assistant to reveal a cutting card C. Select C uniformly from the 52 cards on each reveal request, using a simple random draw; cryptographic randomness is not required.
+- C may be refreshed if it was shown to the designated handler. Refreshing C replaces the prior cut target. Any arrows previously generated for the old C must not be reused.
+- The assistant performs the physical cut described in section 5.
+- After the physical cut, the assistant confirms the cut. This advances to the handoff screen.
 - Back returns to the previously visited screen. When entered from board selection, this returns to board selection.
 
 ### 4.6 Handoff screen
 
-- Display a brief instruction to hand the phone to the dealer.
-- Require acknowledgement by the dealer before showing arrows.
+- Display a brief instruction to hand the phone to the handler.
+- Require acknowledgement by the handler before showing arrows.
 - Acknowledge advances to the arrow screen and generates the arrows from the currently stored C.
 - Cancel/back returns to the prior screen in app history. This can reveal information contrary to the table protocol; that is accepted under the non-adversarial user assumption.
 
@@ -120,20 +123,22 @@ The wording may vary by context, but the action semantics must remain explicit.
 
 ### 5.1 Required sorted deck
 
-The deck is assumed to be sorted exactly as follows, **bottom to top**:
+The handler's deck is assumed to be sorted exactly as follows, **bottom to top**: rank first from 2 through A, then suit from clubs through spades within each rank.
 
-`♣2, ♣3, …, ♣A, ♦2, …, ♦A, ♥2, …, ♥A, ♠2, …, ♠A`
+`♣2, ♦2, ♥2, ♠2, ♣3, ♦3, …, ♥A, ♠A`
 
 Thus ♣2 is bottom and ♠A is top. Rank order is 2, 3, …, 10, J, Q, K, A; suit order is clubs, diamonds, hearts, spades.
 
+This rank-major order was chosen because it reveals less information to the handler about possible rank sequences in the dealt hand. It applies only to the physical deck used at the table. The JSON `owners` string remains suit-major, as defined in section 6. The arrow generator must translate between these orders.
+
 ### 5.2 Cut procedure and offset
 
-Let `D[0..51]` be that canonical order from bottom to top. If C is `D[c]`, then `c` cards are below C. Move those `c` cards to the top, preserving their relative order. C is then the bottom card.
+Let `D[0..51]` be the rank-major table-deck order from bottom to top. If C is `D[c]`, then `c` cards are below C. Move those `c` cards to the top, preserving their relative order. C is then the bottom card.
 
 Examples:
 
 - C=♣2: `c=0`, no cards move.
-- C=♦2: `c=13`, 13 cards move.
+- C=♦2: `c=1`, 1 card moves.
 - C=♠A: `c=51`, 51 cards move.
 
 The next card drawn is from the top. At draw position `k` (zero-based from the top), the card is:
@@ -144,9 +149,15 @@ The positive modulo form is intentional for JavaScript implementations where `%`
 
 ### 5.3 Arrow assignment
 
-Each generated board contains an `owners` string with one owner code for each canonical card index. The arrow for draw position `k` is the direction that owns the card at the above computed index. Each hand must receive exactly 13 cards, producing exactly 13 arrows of each direction.
+Each generated board contains an `owners` string in suit-major order (♣2..♣A, ♦2..♦A, ♥2..♥A, ♠2..♠A). For draw position `k`, first compute the physical card index `i` using the formula above. Convert it to its suit-major index with `suitIndex = i % 4`, `rankIndex = floor(i / 4)`, then `ownersIndex = suitIndex * 13 + rankIndex`. The arrow is the direction encoded by `owners[ownersIndex]`. Each hand must receive exactly 13 cards, producing exactly 13 arrows of each direction.
 
-The board's duplicate-bridge dealer does not affect the sequence. Dealer and vulnerability metadata are for board labeling and future features only.
+The board's duplicate-bridge dealer does not affect the sequence or table protocol. Dealer and vulnerability metadata are for board labeling and future features only.
+
+### 5.4 Table protocol recommendations
+
+- The assistant reveals C and completes the cut without the handler observing either action. The handler deals face down according to the arrows without the assistant observing the dealing.
+- If the handler is also a player, South is recommended: facing an up arrow then naturally places the next card in North's position, with the other arrows following compass order.
+- After dealing, the handler should shuffle their own hand. This reduces what they can infer from their cards about the cutting position.
 
 ## 6. Generated deal-library JSON contract
 
@@ -236,7 +247,7 @@ Example board object (the `owners` string has all 52 characters):
 - `boardNumber`: required integer in `1..64`. Board numbers in each set must be exactly contiguous from 1 through the number of boards in that set.
 - `dealer`: required compass direction character: `N`, `E`, `S`, or `W`.
 - `vulnerability`: required character: `O` (none), `N` (NS), `E` (EW), or `B` (both).
-- `owners`: required string of exactly 52 characters, each in `0..3`. Character `0` means North, `1` East, `2` South, and `3` West. Each character occurs exactly 13 times. Character index 0 corresponds to ♣2, index 51 to ♠A, and each character gives that card's compass hand.
+- `owners`: required string of exactly 52 characters, each in `0..3`. Character `0` means North, `1` East, `2` South, and `3` West. Each character occurs exactly 13 times. The order is suit-major: index 0 is ♣2, index 1 is ♣3, index 12 is ♣A, index 13 is ♦2, and index 51 is ♠A; each character gives that card's compass hand. This order differs from the rank-major physical table deck in section 5.
 - `metadata`: optional JSON object for future board-level metadata. Defaults to `{}` when absent.
 
 Dealer and vulnerability use duplicate-bridge board conventions. Dealer repeats N, E, S, W by board number. Vulnerability repeats every 16 boards in this sequence, with index 1 corresponding to board 1:
@@ -279,7 +290,7 @@ Persist enough state in local storage to restore the user-visible workflow, incl
 - Active board number, if any.
 - Completed board identities and touched sessions.
 - Current screen and up to 20 app history entries.
-- Current cutter target C and cut-confirmation/handoff state needed to resume accurately.
+- Current assistant target C and cut-confirmation/handoff state needed to resume accurately.
 - Selection and scroll position for session/board lists where practical.
 
 Do not persist random-mode arrows. Do not persist derived specific-deal arrow arrays; regenerate them on arrow-page entry using current C.
