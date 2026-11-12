@@ -3,6 +3,7 @@ import { copyFile, mkdtemp, mkdir, readFile, rm, writeFile } from "node:fs/promi
 import { tmpdir } from "node:os"
 import { join, resolve } from "node:path"
 import { buildDealLibrary, parseSet } from "./build-deal-library.js"
+import { referenceOwners } from "./fixtures/reference-data.js"
 
 /*
  * Coverage includes PBN structure/syntax, hand normalization and reconstruction,
@@ -12,7 +13,6 @@ import { buildDealLibrary, parseSet } from "./build-deal-library.js"
  */
 const fixtureDir = resolve("scripts/fixtures")
 const grammarPath = resolve("scripts/pbn.peggy")
-const referenceOwners = "0111310310231322012112222202021330301032003023133301"
 const referenceHands = [
   "QJT85.AT87.2.K96",
   "K643.KJ942.5.J82",
