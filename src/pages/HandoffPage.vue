@@ -17,9 +17,10 @@ function goBack() {
   <section class="menu-screen handoff-screen" aria-label="Hand off to the dealer">
     <div class="handoff-content">
       <h1>Hand off the phone</h1>
-      <p>Give the phone to the dealer before continuing.</p>
-      <button class="menu-button" @click="acknowledge">Continue</button>
+      <div class="handoff-visual" aria-hidden="true">🃏 + 📱 → 🧑</div>
+      <p>Pass the cut deck and phone to the dealer. Keep the bottom card out of sight so the dealer cannot see it.</p>
+      <button class="menu-button" @click="acknowledge">→ Dealer is ready</button>
     </div>
-    <button class="menu-button" @click="goBack">Back</button>
+    <button class="menu-button" @click="goBack">↶ Back to cutting</button>
   </section>
 </template>

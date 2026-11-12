@@ -47,7 +47,7 @@ function returnToBoards() {
   <section v-if="error" class="menu-screen" role="alert" aria-label="Deal display error">
     <h1>Deal unavailable</h1>
     <p>Could not display this deal.</p>
-    <button class="menu-button" @click="returnToBoards">Back to boards</button>
+    <button class="menu-button" @click="returnToBoards">↶ Back to boards</button>
   </section>
   <ArrowDisplay v-else :arrows="arrows" @complete="requestCompletion" />
 </template>
