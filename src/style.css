@@ -67,6 +67,8 @@ body {
   background: #fdf6e3;
   color: #002b36;
   font: inherit;
+  font-size: 1.5em;
+  font-weight: 600;
   touch-action: manipulation;
 }
 
@@ -174,6 +176,8 @@ body {
   background: #fdf6e3;
   color: #002b36;
   font: inherit;
+  font-size: 0.96rem;
+  font-weight: 600;
   touch-action: manipulation;
 }
 
