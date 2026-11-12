@@ -64,10 +64,60 @@ export const useAppStore = defineStore("app", {
         }
         this.dealLibrary = library
         this.libraryStatus = "ready"
+        this.recoverSavedState()
       } catch {
         this.dealLibrary = null
         this.libraryStatus = "error"
       }
+    },
+    /** Recovers persisted session, board, and completion references against current data. */
+    recoverSavedState() {
+      const sets = this.dealLibrary?.sets ?? []
+      const validSets = new Map(sets.map((set) => [set.setId, set]))
+      const validCompletions = {}
+
+      for (const [setId, boardNumbers] of Object.entries(this.completedBoards ?? {})) {
+        const set = validSets.get(setId)
+        if (!set || !Array.isArray(boardNumbers)) continue
+        const availableBoards = new Set(set.boards.map((board) => board.boardNumber))
+        validCompletions[setId] = [...new Set(boardNumbers.filter((number) => availableBoards.has(number)))].sort((a, b) => a - b)
+      }
+      this.completedBoards = validCompletions
+
+      if (!this.activeSessionId) {
+        if (["boards", "cutter", "handoff", "dealer", "complete"].includes(this.screen)) {
+          this.recoverToHome()
+        }
+        return
+      }
+
+      const session = validSets.get(this.activeSessionId)
+      if (!session) {
+        this.recoverToHome()
+        return
+      }
+
+      this.activeSessionBoardCount = session.boards.length
+      const hasBoard = session.boards.some((board) => board.boardNumber === this.activeBoardNumber)
+      if (["cutter", "handoff", "dealer", "complete"].includes(this.screen) && !hasBoard) {
+        this.screen = "boards"
+        this.activeBoardNumber = null
+        this.cuttingCard = null
+        this.history = this.history.filter((screen) => !["cutter", "handoff", "dealer", "complete"].includes(screen))
+      } else if (this.screen === "boards" && this.activeBoardNumber !== null && !hasBoard) {
+        this.activeBoardNumber = null
+      }
+      persistState(this.$state)
+    },
+    /** Clears stale session workflow state and restores Home. */
+    recoverToHome() {
+      this.screen = "home"
+      this.activeSessionId = null
+      this.activeBoardNumber = null
+      this.activeSessionBoardCount = 0
+      this.cuttingCard = null
+      this.history = this.history.filter((screen) => !["boards", "cutter", "handoff", "dealer", "complete"].includes(screen))
+      persistState(this.$state)
     },
     /** Navigates to a screen while recording the prior screen, capped at 20 entries. */
     navigate(screen) {
