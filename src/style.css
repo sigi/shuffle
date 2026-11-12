@@ -1,3 +1,4 @@
+/* Global full-screen layout, touch behavior, and menu styling. */
 @import "./assets/reset.min.css";
 @import "./assets/arrows.css";
 
@@ -30,11 +31,218 @@ body {
   background-color: #e9e1c9;
 }
 
+.app-screen {
+  width: 100%;
+  height: 100%;
+}
+
+.menu-screen {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0.5rem;
+  font-size: 0.3rem;
+  text-align: center;
+  touch-action: none;
+}
+
+.menu-screen h1 {
+  margin: 0 0 0.35rem;
+  font-size: 0.55rem;
+}
+
+.menu-screen p {
+  margin: 0 0 0.2rem;
+}
+
+.menu-button {
+  width: min(100%, 9rem);
+  min-height: 1rem;
+  border: 0.04rem solid #657b83;
+  border-radius: 0.12rem;
+  background: #fdf6e3;
+  color: #002b36;
+  font: inherit;
+  touch-action: manipulation;
+}
+
+.session-screen {
+  position: relative;
+  justify-content: flex-start;
+  padding: 0.6rem 0.5rem 1.6rem;
+}
+
+.session-list {
+  display: flex;
+  width: min(100%, 9rem);
+  flex: 1;
+  flex-direction: column;
+  gap: 0.2rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding-bottom: 1.2rem;
+}
+
+.session-button {
+  flex: 0 0 auto;
+}
+
+.handoff-screen {
+  justify-content: space-between;
+  padding-bottom: max(0.4rem, env(safe-area-inset-bottom));
+}
+
+.handoff-content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.board-screen {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.5rem 1.5rem;
+  overflow: hidden;
+  font-size: 0.3rem;
+  text-align: center;
+  touch-action: none;
+}
+
+.board-screen h1 {
+  flex: 0 0 auto;
+  margin: 0;
+  font-size: 0.5rem;
+}
+
+.board-grid {
+  display: grid;
+  width: min(100%, 12rem);
+  flex: 1;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-auto-rows: min-content;
+  align-content: start;
+  gap: 0.12rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding-bottom: 1.2rem;
+}
+
+.screen-back-button {
+  position: absolute;
+  z-index: 2;
+  bottom: max(0.25rem, env(safe-area-inset-bottom));
+  left: 50%;
+  width: min(calc(100% - 1rem), 9rem);
+  transform: translateX(-50%);
+}
+
+.board-button {
+  display: flex;
+  aspect-ratio: 1 / 1;
+  align-items: center;
+  justify-content: center;
+  border: 0.04rem solid #657b83;
+  border-radius: 0.1rem;
+  background: #fdf6e3;
+  color: #002b36;
+  font: inherit;
+  touch-action: manipulation;
+}
+
+.board-button.active {
+  border-color: #268bd2;
+  background: #b9dff2;
+  box-shadow: inset 0 0 0 0.04rem #268bd2;
+}
+
+.board-button.completed {
+  color: #899496;
+  background: #d7d4ca;
+}
+
+.board-button.completed.active {
+  border-color: #268bd2;
+  background: #b9dff2;
+  color: #002b36;
+}
+
+.cutter-screen {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.25rem;
+  padding: 0.4rem;
+  text-align: center;
+  touch-action: none;
+}
+
+.cutter-screen h1 {
+  margin: 0;
+  font-size: 0.42rem;
+}
+
+.cutter-screen p {
+  margin: 0.15rem 0 0.55rem;
+  font-size: 0.26rem;
+}
+
+.cut-card {
+  display: flex;
+  width: 80vw;
+  max-width: 8rem;
+  aspect-ratio: 0.72;
+  align-items: center;
+  justify-content: center;
+  gap: 0.06em;
+  border-radius: 0.18rem;
+  padding: 0;
+  background: #fdf6e3;
+  box-shadow: 0 0.08rem 0.24rem #002b3633;
+  font-size: min(24vw, 2.4rem);
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.suit-c { color: #16833b; }
+.suit-d { color: #e87500; }
+.suit-h { color: #c62828; }
+.suit-s { color: #153a78; }
+
+.cutter-actions {
+  display: flex;
+  width: min(100%, 9rem);
+  margin-top: auto;
+  flex-direction: column;
+  font-size: 0.28rem;
+}
+
 .arrow-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(1.5rem, 1fr));
   grid-row-gap: 0.1rem;
   overflow: hidden;
+}
+
+.deal-arrow-display {
+  touch-action: none;
 }
 
 i {
