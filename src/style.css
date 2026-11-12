@@ -2,6 +2,30 @@
 @import "./assets/reset.min.css";
 @import "./assets/arrows.css";
 
+@font-face {
+  font-family: "cartamini2";
+  src: url("./assets/cartamini2.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
+
+@font-face {
+  font-family: "Roboto";
+  src: url("https://fonts.gstatic.com/s/roboto/v30/KFOmCnqEu92Fr1Mu4mxK.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Roboto Slab";
+  src: url("https://fonts.gstatic.com/s/robotoslab/v34/BngMUXZYTXPIvIBgJJSb6ufN5qWr4xCC.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+}
+
 *,
 *::before,
 *::after {
@@ -25,6 +49,10 @@ html {
   font-size: 10vmin;
   color: #002b36;
   touch-action: manipulation;
+}
+
+body {
+  font-family: "Roboto", Arial, sans-serif;
 }
 
 body {
@@ -52,7 +80,7 @@ body {
 
 .menu-screen h1 {
   margin: 0 0 0.35rem;
-  font-size: 0.55rem;
+  font-size: 0.8rem;
 }
 
 .home-screen {
@@ -133,7 +161,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 0.2rem;
+  padding: 0 0.4rem;
 }
 
 .session-button.touched {
@@ -178,7 +206,7 @@ body {
 .board-screen h1 {
   flex: 0 0 auto;
   margin: 0;
-  font-size: 0.5rem;
+  font-size: 0.8rem;
 }
 
 .board-grid {
@@ -251,12 +279,12 @@ body {
 
 .cutter-screen h1 {
   margin: 0;
-  font-size: 0.42rem;
+  font-size: 0.7rem;
 }
 
 .cutter-screen p {
   margin: 0;
-  font-size: 0.36rem;
+  font-size: 0.5rem;
   line-height: 1.25;
 }
 
@@ -273,7 +301,7 @@ body {
   display: flex;
   width: calc(100vw - 0.8rem);
   max-width: 11.2rem;
-  aspect-ratio: 0.72;
+  aspect-ratio: 1.03;
   align-items: center;
   justify-content: center;
   gap: 0.06em;
@@ -282,6 +310,7 @@ body {
   background: #fdf6e3;
   box-shadow: 0 0.08rem 0.24rem #002b3633;
   font-size: min(33.6vw, 3.36rem);
+  font-family: "Roboto Slab", Georgia, serif;
   font-weight: 700;
   line-height: 1;
   cursor: pointer;

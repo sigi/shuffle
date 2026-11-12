@@ -91,7 +91,7 @@ describe("page interactions", () => {
       global: { plugins: [pinia] },
     })
     expect(page.text()).toContain("Alpha Session · Board 3")
-    expect(page.text()).toContain("♣10")
+    expect(page.text()).toContain("!c10")
     const buttons = page.findAll("button")
     await buttons[0].trigger("click")
     await buttons[1].trigger("click")

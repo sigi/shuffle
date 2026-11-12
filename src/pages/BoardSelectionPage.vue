@@ -73,6 +73,6 @@ watch(() => [app.libraryStatus, boards.value.length], restoreScrollPosition)
         {{ board.boardNumber }}
       </button>
     </div>
-    <button class="menu-button screen-back-button" @click="goBack">‹ Sessions</button>
+    <button class="menu-button screen-back-button" @click="goBack"><span class="i-mdi-chevron-left" aria-hidden="true" /> Sessions</button>
   </section>
 </template>

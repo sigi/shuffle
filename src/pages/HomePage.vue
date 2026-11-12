@@ -16,8 +16,8 @@ function openMode(mode) {
       <h1>Shuffle</h1>
     </div>
     <div class="home-actions">
-      <button class="menu-button" @click="openMode('random')">🎲 Random dealing</button>
-      <button class="menu-button" @click="openMode('library')">🗂 Play a session</button>
+      <button class="menu-button" @click="openMode('random')"><span class="i-mdi-dice-5" aria-hidden="true" /> Random dealing</button>
+      <button class="menu-button" @click="openMode('library')"><span class="i-mdi-folder-open" aria-hidden="true" /> Play a session</button>
     </div>
   </section>
 </template>

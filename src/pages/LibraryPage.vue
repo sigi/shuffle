@@ -40,6 +40,6 @@ function goBack() {
         <small v-if="(app.completedBoards[session.setId]?.length ?? 0) > 0">In progress</small>
       </button>
     </div>
-    <button class="menu-button screen-back-button" @click="goBack">⌂ Home</button>
+    <button class="menu-button screen-back-button" @click="goBack"><span class="i-mdi-home" aria-hidden="true" /> Home</button>
   </section>
 </template>

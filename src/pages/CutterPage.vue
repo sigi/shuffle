@@ -1,6 +1,7 @@
 <!-- Cutter page revealing and refreshing the randomly selected cut card. -->
 <script setup>
 import { computed } from "vue"
+import Suit from "../components/Suit.vue"
 import { useAppStore } from "../stores/app"
 
 const props = defineProps({
@@ -46,11 +47,11 @@ function confirmCut() {
       :aria-label="`Cutting card ${displayCard}. Tap to refresh.`"
       @click="refreshCard"
     >
-      <span>{{ suits[cuttingCard.slice(-1)] }}</span><span>{{ displayRank }}</span>
-      <span class="cut-card-refresh" aria-hidden="true">↻</span>
+      <Suit :suit="cuttingCard.slice(-1)" /><span>{{ displayRank }}</span>
+      <span class="cut-card-refresh i-mdi-refresh" aria-hidden="true" />
     </button>
     <div class="cutter-actions">
-      <button class="menu-button" @click="confirmCut">✓ Cut performed — hand off</button>
+      <button class="menu-button" @click="confirmCut"><span class="i-mdi-check" aria-hidden="true" /> Cut performed — hand off</button>
     </div>
   </section>
 </template>

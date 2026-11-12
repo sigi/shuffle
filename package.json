@@ -16,6 +16,8 @@
     "workbox-window": "^7.4.1"
   },
   "devDependencies": {
+    "@iconify-json/mdi": "^1.2.3",
+    "@unocss/preset-icons": "^66.12.0",
     "@vitejs/plugin-vue": "^6.0.10",
     "@vue/test-utils": "^2.5.1",
     "happy-dom": "^21.0.4",

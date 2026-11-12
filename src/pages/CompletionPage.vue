@@ -18,7 +18,7 @@ function cancel() {
   <section class="menu-screen" aria-label="Confirm board completion">
     <h1>Complete board {{ boardNumber }}?</h1>
     <p>Mark this board complete after all 52 cards have been dealt.</p>
-    <button class="menu-button" @click="confirm">✓ Mark deal complete</button>
-    <button class="menu-button" @click="cancel">↶ Keep dealing</button>
+    <button class="menu-button" @click="confirm"><span class="i-mdi-check-circle-outline" aria-hidden="true" /> Mark deal complete</button>
+    <button class="menu-button" @click="cancel"><span class="i-mdi-arrow-u-left-top" aria-hidden="true" /> Keep dealing</button>
   </section>
 </template>
