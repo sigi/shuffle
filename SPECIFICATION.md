@@ -65,13 +65,13 @@ The app must not expose URL loading or upload controls.
 - Show all boards in the active session, ordered by numeric `boardNumber`.
 - Completed boards are visibly greyed out but remain selectable and replayable.
 - The active board is highlighted. Selecting another board replaces the active selection and clears any other board highlight.
-- When a new session is selected, board 1 is initially highlighted and scrolled into view.
+- Preserve and restore the board grid's scroll position when re-entering the screen. It is not necessary to scroll an active board into view.
 - When a session is resumed, show board selection. Restore the saved active board if it is still present; otherwise recover to board selection with no active board. If the session itself no longer exists, recover to Home.
-- Completing board N returns to this screen and highlights and scrolls board N+1 into view.
+- Completing board N returns to this screen and highlights board N+1, if present.
 - If N is the final board, return to board selection with no active board highlighted. The set has reached its final board; do not wrap to board 1.
 - A completed board may be selected and replayed. It remains marked completed (grey) while active. Completing a replay returns to selection and highlights N+1, if present.
-- Selecting a different board abandons any prior board workflow. It does not change prior completion state.
-- The screen provides an explicit action to return Home. This is distinct from native back navigation.
+- Selecting a different board does not change prior completion state. Existing navigation history may remain available across board selection.
+- The screen provides an explicit action to return to session selection.
 
 ### 4.5 Assistant screen
 
@@ -80,28 +80,29 @@ The app must not expose URL loading or upload controls.
 - C may be refreshed if it was shown to the designated handler. Refreshing C replaces the prior cut target. Any arrows previously generated for the old C must not be reused.
 - The assistant performs the physical cut described in section 5.
 - After the physical cut, the assistant confirms the cut. This advances to the handoff screen.
-- Back returns to the previously visited screen. When entered from board selection, this returns to board selection.
+- Back returns to the previously visited screen. When entered from board selection, this returns to board selection. Back may be invoked by the app's Back button or global upward-swipe gesture.
 
 ### 4.6 Handoff screen
 
 - Display a brief instruction to hand the phone to the handler.
 - Require acknowledgement by the handler before showing arrows.
 - Acknowledge advances to the arrow screen and generates the arrows from the currently stored C.
-- Cancel/back returns to the prior screen in app history. This can reveal information contrary to the table protocol; that is accepted under the non-adversarial user assumption.
+- Cancel and the app's Back button or upward-swipe gesture return to the prior screen in app history. This can reveal information contrary to the table protocol; that is accepted under the non-adversarial user assumption.
 
 ### 4.7 Specific-deal arrow screen
 
-- Display only the 52 arrows, in dealing order. Do not display set name, board number, card identities, hands, controls, or explanatory text on this screen.
+- Normally display only the 52 arrows, in dealing order. Do not display set name, board number, card identities, hands, controls, or explanatory text on the arrow display.
+- If the deal cannot be loaded or arrows cannot be generated, an error page may replace the arrow display. It must provide a user-reachable action back to a healthy screen, such as board selection.
 - Tapping once is a no-op, apart from the first application tap behavior in section 8.
-- Double-tapping opens completion confirmation. The arrow page itself does not determine whether all cards have physically been dealt.
+- Swiping down opens completion confirmation. The arrow page itself does not determine whether all cards have physically been dealt.
 - On every entry to this screen, regenerate arrows from the selected board and the C currently stored for this workflow. Do not cache the arrow sequence. If C changes, arrows must reflect the new C.
-- Native back returns to the previous screen in app history, normally handoff. Do not shortcut directly to board selection.
+- The app's Back button or global upward-swipe gesture returns to the previous screen in app history, normally handoff. Do not shortcut directly to board selection.
 
 ### 4.8 Confirmation screens
 
 All confirmation screens must:
 
-- Support native back to the previous screen.
+- Support the app's Back button and global upward-swipe gesture to return to the previous screen.
 - Offer context-appropriate confirmation and cancellation actions.
 - Display a brief hint explaining the action or next workflow step.
 
@@ -109,13 +110,13 @@ Completion confirmation:
 
 - Confirm marks the active `(setId, boardNumber)` completed, marks its session touched, and returns to board selection.
 - Cancel returns to the arrow screen without changing completion state.
-- Native back returns to arrows without changing completion state.
+- App Back button or upward-swipe gesture returns to arrows without changing completion state.
 
 Cut confirmation:
 
 - Confirm accepts the physical cut and advances to handoff.
 - Cancel returns to the cutter screen with the currently selected C visible.
-- Native back returns to the previous screen in app history.
+- App Back button or upward-swipe gesture returns to the previous screen in app history.
 
 The wording may vary by context, but the action semantics must remain explicit.
 
@@ -299,12 +300,11 @@ History rules:
 
 - Record all app screen transitions in order.
 - Keep at most 20 entries. When adding an entry over the limit, drop the oldest entry.
-- Native back removes/restores the last app screen entry. When app history is empty, the app state does not move.
-- The SPA URL remains unchanged; native browser navigation is only an input to app state.
+- The global upward-swipe gesture and app Back buttons remove/restore the last app screen entry. When app history is empty, the app state does not move.
+- Browser native-back navigation is not used or intercepted by the application.
+- History may persist across selecting different boards.
 - If the saved active session is no longer present in the bundled library, discard stale session/workflow state and show Home. If the session exists but a saved board does not, recover to that session's board selection with no invalid board active.
 - Invalid or unsupported persisted state must not prevent startup; recover to the nearest valid screen or Home.
-
-Because browser session history is controlled by the browser, a web application cannot guarantee that Back never leaves the page. The implementation must use same-URL History API entries and `popstate` to map Back to app history while entries exist, and should re-arm its same-URL guard as needed. This is best effort at the browser-history boundary; it must not change the visible URL. The app must be tested in supported mobile browsers and installed-PWA mode.
 
 ## 8. Mobile presentation and interaction
 
@@ -315,7 +315,7 @@ Because browser session history is controlled by the browser, a web application 
 - Request fullscreen aggressively. If fullscreen requires a user gesture, the first tap anywhere on the app requests fullscreen and that tap event is discarded; it must not also activate a control or regenerate arrows.
 - Random-mode taps after that first gesture regenerate arrows.
 - Disable text selection and browser zoom to the extent possible in a web application. Platform and accessibility overrides may still permit zoom; this is best effort, not a guarantee.
-- Scrolling is allowed only in session and board lists. Selecting/highlighting a board should scroll it into view when the workflow specifies it, including board N+1 after completion.
+- Scrolling is allowed only in session and board lists. Preserve and restore the board grid scroll position on screen re-entry; no automatic scroll to the selected board is required.
 
 ## 9. Offline and update behavior
 
