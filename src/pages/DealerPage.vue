@@ -12,7 +12,7 @@ const props = defineProps({
 })
 const arrows = ref([])
 const error = ref(false)
-const emit = defineEmits(["complete"])
+const emit = defineEmits(["complete", "back"])
 const app = useAppStore()
 const board = computed(() => app.dealLibrary?.sets
   ?.find((set) => set.setId === props.setId)
@@ -36,9 +36,18 @@ watch(() => [app.libraryStatus, props.setId, props.boardNumber, props.cuttingCar
 function requestCompletion() {
   emit("complete")
 }
+
+// Returns to board selection when the selected deal cannot be displayed.
+function returnToBoards() {
+  emit("back")
+}
 </script>
 
 <template>
-  <p v-if="error" role="alert">Could not load the selected deal.</p>
+  <section v-if="error" class="menu-screen" role="alert" aria-label="Deal display error">
+    <h1>Deal unavailable</h1>
+    <p>Could not display this deal.</p>
+    <button class="menu-button" @click="returnToBoards">Back to boards</button>
+  </section>
   <ArrowDisplay v-else :arrows="arrows" @complete="requestCompletion" />
 </template>
