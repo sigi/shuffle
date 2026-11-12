@@ -7,30 +7,13 @@ import { createDealArrows } from "../src/lib/deal-arrows.js"
 
 const STORAGE_KEY = "shuffle-app-state-v1"
 
-// Provides a deterministic localStorage implementation for store hydration tests.
-function createStorage() {
-  const values = new Map()
-  return {
-    getItem(key) { return values.get(key) ?? null },
-    setItem(key, value) { values.set(key, String(value)) },
-    removeItem(key) { values.delete(key) },
-    clear() { values.clear() },
-  }
-}
-
-let previousStorage
-let previousFetch
-
 beforeEach(() => {
-  previousStorage = globalThis.localStorage
-  previousFetch = globalThis.fetch
-  globalThis.localStorage = createStorage()
+  localStorage.clear()
   setActivePinia(createPinia())
 })
 
 afterEach(() => {
-  globalThis.localStorage = previousStorage
-  globalThis.fetch = previousFetch
+  vi.unstubAllGlobals()
   vi.restoreAllMocks()
 })
 
@@ -48,7 +31,7 @@ describe("persisted app state recovery", () => {
       completedBoards: { "instant-mp-1987": [1, 99], removed: [1] },
       boardScrollPositions: { "instant-mp-1987": 120 },
     }))
-    globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => library })
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => library }))
 
     const app = useAppStore()
     await app.loadDealLibrary()
@@ -72,7 +55,7 @@ describe("persisted app state recovery", () => {
       cuttingCard: "2C",
       completedBoards: {},
     }))
-    globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => library })
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => library }))
 
     const app = useAppStore()
     await app.loadDealLibrary()
@@ -194,7 +177,7 @@ describe("app navigation and deal workflow", () => {
 describe("deal library initialization", () => {
   it("loads the library once and stores it in Pinia", async () => {
     const library = JSON.parse(await readFile("scripts/fixtures/deal-library.json", "utf8"))
-    globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => library })
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => library }))
     const app = useAppStore()
 
     await app.loadDealLibrary()
@@ -202,14 +185,14 @@ describe("deal library initialization", () => {
 
     expect(app.libraryStatus).toBe("ready")
     expect(app.dealLibrary).toEqual(library)
-    expect(globalThis.fetch).toHaveBeenCalledTimes(1)
+    expect(fetch).toHaveBeenCalledTimes(1)
   })
 
   it.each([
     ["http failure", { ok: false }],
     ["unsupported schema", { ok: true, json: async () => ({ schemaVersion: 2, sets: [] }) }],
   ])("sets the library error state after %s", async (_label, response) => {
-    globalThis.fetch = vi.fn().mockResolvedValue(response)
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(response))
     const app = useAppStore()
     await app.loadDealLibrary()
     expect(app.libraryStatus).toBe("error")

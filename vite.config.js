@@ -5,7 +5,10 @@ import { defineConfig, lazyPlugins } from "vite-plus"
 // https://vite.dev/config/
 export default defineConfig({
   base: "./",
-  test: { include: ["scripts/**/*.test.js"] },
+  test: {
+    include: ["scripts/**/*.test.js"],
+    environment: "happy-dom",
+  },
   fmt: { semi: false },
   lint: {
     jsPlugins: [{ name: "vite-plus", specifier: "vite-plus/oxlint-plugin" }],

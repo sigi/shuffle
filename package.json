@@ -17,6 +17,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.10",
+    "@vue/test-utils": "^2.5.1",
+    "happy-dom": "^21.0.4",
     "peggy": "^4.2.0",
     "slug": "12.0.1",
     "unocss": "^66.12.0",
