@@ -33,9 +33,11 @@ function goBack() {
         v-for="session in sessions"
         :key="session.setId"
         class="menu-button session-button"
+        :class="{ touched: (app.completedBoards[session.setId]?.length ?? 0) > 0 }"
         @click="selectSession(session.setId)"
       >
-        {{ session.name }}
+        <span>{{ session.name }}</span>
+        <small v-if="(app.completedBoards[session.setId]?.length ?? 0) > 0">Touched</small>
       </button>
     </div>
     <button class="menu-button screen-back-button" @click="goBack">Back</button>

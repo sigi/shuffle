@@ -90,6 +90,20 @@ body {
 
 .session-button {
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0.2rem;
+}
+
+.session-button.touched {
+  border-color: #859900;
+}
+
+.session-button small {
+  margin-left: 0.15rem;
+  color: #586e75;
+  font-size: 0.72em;
 }
 
 .handoff-screen {
