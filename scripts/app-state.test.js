@@ -81,6 +81,140 @@ describe("persisted app state recovery", () => {
     expect(app.activeSessionId).toBeNull()
     expect(app.activeBoardNumber).toBeNull()
   })
+
+  it("falls back to Home for invalid saved JSON and unsupported versions", () => {
+    localStorage.setItem(STORAGE_KEY, "not-json")
+    expect(useAppStore().screen).toBe("home")
+
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ version: 99, screen: "dealer", history: [] }))
+    setActivePinia(createPinia())
+    expect(useAppStore().screen).toBe("home")
+  })
+
+  it("persists navigation, completion data, and scroll positions across store instances", () => {
+    const app = useAppStore()
+    app.selectSession({ setId: "instant-mp-1987", boardCount: 52 })
+    app.completedBoards["instant-mp-1987"] = [1]
+    app.setBoardScrollPosition("instant-mp-1987", 240)
+
+    setActivePinia(createPinia())
+    const restored = useAppStore()
+    expect(restored.screen).toBe("boards")
+    expect(restored.activeSessionId).toBe("instant-mp-1987")
+    expect(restored.activeSessionBoardCount).toBe(52)
+    expect(restored.completedBoards["instant-mp-1987"]).toEqual([1])
+    expect(restored.boardScrollPositions["instant-mp-1987"]).toBe(240)
+  })
+})
+
+describe("app navigation and deal workflow", () => {
+  it("caps history at 20 entries and leaves the screen unchanged when history is empty", () => {
+    const app = useAppStore()
+    for (let index = 0; index < 24; index += 1) {
+      app.navigate(app.screen === "home" ? "random" : "home")
+    }
+    expect(app.history).toHaveLength(20)
+    const currentScreen = app.screen
+    app.history = []
+    app.goBack()
+    expect(app.screen).toBe(currentScreen)
+  })
+
+  it("selects and refreshes cut cards at the random range boundaries", () => {
+    const app = useAppStore()
+    app.screen = "boards"
+    vi.spyOn(Math, "random").mockReturnValueOnce(0).mockReturnValueOnce(0.999999)
+
+    app.selectBoard(1)
+    expect(app.cuttingCard).toBe("2C")
+    expect(app.screen).toBe("cutter")
+    app.refreshCuttingCard()
+    expect(app.cuttingCard).toBe("AS")
+  })
+
+  it("navigates through cut, handoff, dealer, and completion with back support", () => {
+    const app = useAppStore()
+    app.screen = "boards"
+    app.activeSessionId = "instant-mp-1987"
+    app.activeSessionBoardCount = 52
+    app.selectBoard(4)
+    app.confirmCut()
+    app.acknowledgeHandoff()
+    app.beginCompletion()
+    expect(app.screen).toBe("complete")
+
+    app.goBack()
+    expect(app.screen).toBe("dealer")
+    app.goBack()
+    expect(app.screen).toBe("handoff")
+    app.goBack()
+    expect(app.screen).toBe("cutter")
+  })
+
+  it("marks a session touched, keeps replay completion, and selects the next board", () => {
+    const app = useAppStore()
+    app.activeSessionId = "instant-mp-1987"
+    app.activeSessionBoardCount = 2
+    app.activeBoardNumber = 1
+    app.screen = "complete"
+
+    app.completeBoard()
+    expect(app.screen).toBe("boards")
+    expect(app.activeBoardNumber).toBe(2)
+    expect(app.completedBoards["instant-mp-1987"]).toEqual([1])
+
+    app.activeBoardNumber = 1
+    app.screen = "complete"
+    app.completeBoard()
+    expect(app.completedBoards["instant-mp-1987"]).toEqual([1])
+    expect(app.activeBoardNumber).toBe(2)
+  })
+
+  it("does not wrap after completing the final board", () => {
+    const app = useAppStore()
+    app.activeSessionId = "instant-mp-1987"
+    app.activeSessionBoardCount = 2
+    app.activeBoardNumber = 2
+    app.screen = "complete"
+
+    app.completeBoard()
+    expect(app.screen).toBe("boards")
+    expect(app.activeBoardNumber).toBeNull()
+    expect(app.completedBoards["instant-mp-1987"]).toEqual([2])
+  })
+
+  it("stores board scroll positions independently by session", () => {
+    const app = useAppStore()
+    app.setBoardScrollPosition("set-a", 100)
+    app.setBoardScrollPosition("set-b", 250)
+    expect(app.boardScrollPositions).toEqual({ "set-a": 100, "set-b": 250 })
+  })
+})
+
+describe("deal library initialization", () => {
+  it("loads the library once and stores it in Pinia", async () => {
+    const library = JSON.parse(await readFile("scripts/fixtures/deal-library.json", "utf8"))
+    globalThis.fetch = vi.fn().mockResolvedValue({ ok: true, json: async () => library })
+    const app = useAppStore()
+
+    await app.loadDealLibrary()
+    await app.loadDealLibrary()
+
+    expect(app.libraryStatus).toBe("ready")
+    expect(app.dealLibrary).toEqual(library)
+    expect(globalThis.fetch).toHaveBeenCalledTimes(1)
+  })
+
+  it.each([
+    ["http failure", { ok: false }],
+    ["unsupported schema", { ok: true, json: async () => ({ schemaVersion: 2, sets: [] }) }],
+  ])("sets the library error state after %s", async (_label, response) => {
+    globalThis.fetch = vi.fn().mockResolvedValue(response)
+    const app = useAppStore()
+    await app.loadDealLibrary()
+    expect(app.libraryStatus).toBe("error")
+    expect(app.dealLibrary).toBeNull()
+  })
 })
 
 describe("dealer error recovery", () => {
