@@ -116,7 +116,7 @@ function handleCapturedClick(event) {
       :board-number="app.activeBoardNumber"
       :cutting-card="app.cuttingCard"
       @complete="app.beginCompletion"
-      @back="app.navigate('boards')"
+      @back="app.recoverDealerError"
     />
   </main>
 </template>

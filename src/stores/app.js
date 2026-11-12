@@ -169,6 +169,10 @@ export const useAppStore = defineStore("app", {
     beginCompletion() {
       this.navigate("complete")
     },
+    /** Recovers from an unavailable dealer display to the active session's boards. */
+    recoverDealerError() {
+      this.navigate("boards")
+    },
     /** Marks the active board complete and returns to selection with the next board active. */
     completeBoard() {
       const completed = this.completedBoards[this.activeSessionId] ?? []
