@@ -1,5 +1,8 @@
 <!-- Cutter page revealing and refreshing the randomly selected cut card. -->
 <script setup>
+import { computed } from "vue"
+import { useAppStore } from "../stores/app"
+
 const props = defineProps({
   sessionId: { type: String, default: "" },
   boardNumber: { type: Number, default: null },
@@ -7,6 +10,9 @@ const props = defineProps({
 })
 const emit = defineEmits(["refresh", "confirm"])
 const suits = { C: "♣", D: "♦", H: "♥", S: "♠" }
+const app = useAppStore()
+const sessionName = computed(() => app.dealLibrary?.sets
+  ?.find((set) => set.setId === props.sessionId)?.name ?? props.sessionId)
 
 // Returns the suit class used to color both card characters.
 function suitClass(card) {
@@ -26,7 +32,7 @@ function confirmCut() {
 
 <template>
   <section class="cutter-screen" aria-label="Cut the deck">
-    <h1>{{ sessionId }} · Board {{ boardNumber }}</h1>
+    <h1>{{ sessionName }} · Board {{ boardNumber }}</h1>
     <p>Find this card from the bottom of the sorted deck.</p>
     <button
       class="cut-card"
