@@ -1,6 +1,6 @@
 <!-- Scrollable board grid for the selected session. -->
 <script setup>
-import { computed } from "vue"
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from "vue"
 import { useAppStore } from "../stores/app"
 
 const props = defineProps({
@@ -12,6 +12,8 @@ const emit = defineEmits(["back", "select"])
 const app = useAppStore()
 const session = computed(() => app.dealLibrary?.sets?.find((set) => set.setId === props.setId) ?? null)
 const boards = computed(() => [...(session.value?.boards ?? [])].sort((a, b) => a.boardNumber - b.boardNumber))
+const boardGrid = ref(null)
+let scrollSaveTimer
 
 // Opens the cutter workflow for the selected board.
 function selectBoard(boardNumber) {
@@ -23,6 +25,31 @@ function goBack() {
   emit("back")
 }
 
+// Debounces persistence while the user scrolls the board grid.
+function saveScrollPosition(event) {
+  clearTimeout(scrollSaveTimer)
+  const scrollTop = event.currentTarget.scrollTop
+  scrollSaveTimer = setTimeout(() => app.setBoardScrollPosition(props.setId, scrollTop), 120)
+}
+
+// Restores the previously saved scroll position when the board grid appears.
+async function restoreScrollPosition() {
+  await nextTick()
+  if (boardGrid.value) {
+    boardGrid.value.scrollTop = app.boardScrollPositions[props.setId] ?? 0
+  }
+}
+
+// Flushes the last scroll position when leaving the screen.
+function flushScrollPosition() {
+  clearTimeout(scrollSaveTimer)
+  if (boardGrid.value) app.setBoardScrollPosition(props.setId, boardGrid.value.scrollTop)
+}
+
+onMounted(restoreScrollPosition)
+onUnmounted(flushScrollPosition)
+watch(() => [app.libraryStatus, boards.value.length], restoreScrollPosition)
+
 </script>
 
 <template>
@@ -30,7 +57,7 @@ function goBack() {
     <h1>{{ session?.name ?? "Select a board" }}</h1>
     <p v-if="app.libraryStatus === 'loading'">Loading boards…</p>
     <p v-else-if="app.libraryStatus === 'error' || !session" role="alert">Could not load the session.</p>
-    <div v-else class="board-grid">
+    <div v-else ref="boardGrid" class="board-grid" @scroll.passive="saveScrollPosition">
       <button
         v-for="board in boards"
         :key="board.boardNumber"

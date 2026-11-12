@@ -10,7 +10,7 @@ function restoreState() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
     if (saved?.version !== 1 || !SCREENS.has(saved.screen) || !Array.isArray(saved.history)) {
-      return { screen: "home", history: [], activeSessionId: null, activeBoardNumber: null, activeSessionBoardCount: 0, cuttingCard: null, completedBoards: {} }
+      return { screen: "home", history: [], activeSessionId: null, activeBoardNumber: null, activeSessionBoardCount: 0, cuttingCard: null, completedBoards: {}, boardScrollPositions: {} }
     }
     return {
       screen: saved.screen,
@@ -20,6 +20,7 @@ function restoreState() {
       activeSessionBoardCount: Number.isInteger(saved.activeSessionBoardCount) ? saved.activeSessionBoardCount : 0,
       cuttingCard: typeof saved.cuttingCard === "string" ? saved.cuttingCard : null,
       completedBoards: saved.completedBoards && typeof saved.completedBoards === "object" ? saved.completedBoards : {},
+      boardScrollPositions: saved.boardScrollPositions && typeof saved.boardScrollPositions === "object" ? saved.boardScrollPositions : {},
     }
   } catch {
     return { screen: "home", history: [] }
@@ -38,6 +39,7 @@ function persistState(state) {
       activeSessionBoardCount: state.activeSessionBoardCount,
       cuttingCard: state.cuttingCard,
       completedBoards: state.completedBoards,
+      boardScrollPositions: state.boardScrollPositions,
     }))
   } catch {
     // Storage can be unavailable in private browsing or when quota is exhausted.
@@ -140,6 +142,11 @@ export const useAppStore = defineStore("app", {
       this.activeBoardNumber = boardNumber
       this.refreshCuttingCard()
       this.navigate("cutter")
+      persistState(this.$state)
+    },
+    /** Saves the scroll position for a session's board grid. */
+    setBoardScrollPosition(setId, scrollTop) {
+      this.boardScrollPositions[setId] = Math.max(0, scrollTop)
       persistState(this.$state)
     },
     /** Selects a uniformly distributed card as the current cut target. */
