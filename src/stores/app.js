@@ -46,8 +46,29 @@ function persistState(state) {
 
 /** Pinia store for the current screen and app-managed back history. */
 export const useAppStore = defineStore("app", {
-  state: () => restoreState(),
+  state: () => ({
+    ...restoreState(),
+    dealLibrary: null,
+    libraryStatus: "loading",
+  }),
   actions: {
+    /** Loads the generated deal library once for the app's lifetime. */
+    async loadDealLibrary() {
+      if (this.libraryStatus !== "loading") return
+      try {
+        const response = await fetch(`${import.meta.env.BASE_URL}deal-library.json`)
+        if (!response.ok) throw new Error("Deal library unavailable")
+        const library = await response.json()
+        if (library.schemaVersion !== 1 || !Array.isArray(library.sets)) {
+          throw new Error("Deal library has an unsupported format")
+        }
+        this.dealLibrary = library
+        this.libraryStatus = "ready"
+      } catch {
+        this.dealLibrary = null
+        this.libraryStatus = "error"
+      }
+    },
     /** Navigates to a screen while recording the prior screen, capped at 20 entries. */
     navigate(screen) {
       if (!SCREENS.has(screen) || screen === this.screen) return

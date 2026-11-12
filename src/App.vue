@@ -1,6 +1,6 @@
 <!-- Full-screen app shell with native-back and first-tap fullscreen behavior. -->
 <script setup>
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 import screenfull from "screenfull"
 import { useAppStore } from "./stores/app"
 import BoardSelectionPage from "./pages/BoardSelectionPage.vue"
@@ -17,6 +17,8 @@ const firstTap = ref(true)
 let backSwipeStart = null
 let suppressClick = false
 let suppressClickTimer
+
+onMounted(() => app.loadDealLibrary())
 
 // Requests fullscreen on the first gesture and deliberately discards that gesture.
 function handleFirstTap(event) {

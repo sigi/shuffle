@@ -1,6 +1,7 @@
 <!-- Scrollable board grid for the selected session. -->
 <script setup>
-import { onMounted, ref } from "vue"
+import { computed } from "vue"
+import { useAppStore } from "../stores/app"
 
 const props = defineProps({
   setId: { type: String, default: "" },
@@ -8,25 +9,9 @@ const props = defineProps({
   completedBoardNumbers: { type: Array, default: () => [] },
 })
 const emit = defineEmits(["back", "select"])
-const session = ref(null)
-const loading = ref(true)
-const error = ref("")
-
-// Loads the selected session's board list from the generated library.
-async function loadSession() {
-  try {
-    const response = await fetch(`${import.meta.env.BASE_URL}deal-library.json`)
-    if (!response.ok) throw new Error("Deal library unavailable")
-    const library = await response.json()
-    session.value = library.sets?.find((set) => set.setId === props.setId) ?? null
-    if (!session.value) error.value = "This session is no longer available."
-    else session.value.boards.sort((a, b) => a.boardNumber - b.boardNumber)
-  } catch {
-    error.value = "Could not load the session."
-  } finally {
-    loading.value = false
-  }
-}
+const app = useAppStore()
+const session = computed(() => app.dealLibrary?.sets?.find((set) => set.setId === props.setId) ?? null)
+const boards = computed(() => [...(session.value?.boards ?? [])].sort((a, b) => a.boardNumber - b.boardNumber))
 
 // Opens the cutter workflow for the selected board.
 function selectBoard(boardNumber) {
@@ -38,17 +23,16 @@ function goBack() {
   emit("back")
 }
 
-onMounted(loadSession)
 </script>
 
 <template>
   <section class="board-screen" aria-label="Board selection">
     <h1>{{ session?.name ?? "Select a board" }}</h1>
-    <p v-if="loading">Loading boards…</p>
-    <p v-else-if="error" role="alert">{{ error }}</p>
+    <p v-if="app.libraryStatus === 'loading'">Loading boards…</p>
+    <p v-else-if="app.libraryStatus === 'error' || !session" role="alert">Could not load the session.</p>
     <div v-else class="board-grid">
       <button
-        v-for="board in session.boards"
+        v-for="board in boards"
         :key="board.boardNumber"
         class="board-button"
         :class="{

@@ -1,8 +1,9 @@
 <!-- Dealer page generating and displaying arrows for the selected specific deal. -->
 <script setup>
-import { onMounted, ref } from "vue"
+import { computed, ref, watch } from "vue"
 import ArrowDisplay from "../components/ArrowDisplay.vue"
 import { createDealArrows } from "../lib/deal-arrows.js"
+import { useAppStore } from "../stores/app"
 
 const props = defineProps({
   setId: { type: String, default: "" },
@@ -12,23 +13,24 @@ const props = defineProps({
 const arrows = ref([])
 const error = ref(false)
 const emit = defineEmits(["complete"])
+const app = useAppStore()
+const board = computed(() => app.dealLibrary?.sets
+  ?.find((set) => set.setId === props.setId)
+  ?.boards?.find((item) => item.boardNumber === props.boardNumber))
 
-// Loads the selected board and derives its arrow sequence from the actual cut card.
-async function createArrows() {
+// Derives the selected board's arrows from the actual cut card when data is ready.
+function createArrows() {
+  if (app.libraryStatus === "loading") return
   try {
-    const response = await fetch(`${import.meta.env.BASE_URL}deal-library.json`)
-    if (!response.ok) throw new Error("Deal library unavailable")
-    const library = await response.json()
-    const session = library.sets?.find((set) => set.setId === props.setId)
-    const board = session?.boards?.find((item) => item.boardNumber === props.boardNumber)
-    if (!board) throw new Error("Selected deal unavailable")
-    arrows.value = createDealArrows(board.owners, props.cuttingCard)
+    if (!board.value) throw new Error("Selected deal unavailable")
+    arrows.value = createDealArrows(board.value.owners, props.cuttingCard)
+    error.value = false
   } catch {
     error.value = true
   }
 }
 
-onMounted(createArrows)
+watch(() => [app.libraryStatus, props.setId, props.boardNumber, props.cuttingCard], createArrows, { immediate: true })
 
 // Requests the app's completion confirmation after a double tap.
 function requestCompletion() {
