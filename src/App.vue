@@ -1,6 +1,6 @@
 <!-- Full-screen app shell with native-back and first-tap fullscreen behavior. -->
 <script setup>
-import { onMounted, onUnmounted, ref } from "vue"
+import { ref } from "vue"
 import screenfull from "screenfull"
 import { useAppStore } from "./stores/app"
 import BoardSelectionPage from "./pages/BoardSelectionPage.vue"
@@ -29,6 +29,10 @@ function handleFirstTap(event) {
 
 // Records pointer coordinates for the global upward history gesture.
 function startBackSwipe(event) {
+  if (event.target.closest(".random-arrow-grid")) {
+    backSwipeStart = null
+    return
+  }
   if (event.target.closest(".session-list, .board-grid")) return
   backSwipeStart = { pointerId: event.pointerId, x: event.clientX, y: event.clientY }
 }
@@ -64,21 +68,6 @@ function handleCapturedClick(event) {
   discardSwipeClick(event)
 }
 
-// Keeps browser history on this SPA URL while translating back into app state.
-function handlePopState() {
-  // Re-arm first so mobile browsers keep delivering subsequent back gestures.
-  window.history.pushState({ shuffle: true }, "", window.location.href)
-  if (app.history.length) app.goBack()
-}
-
-// Installs a same-URL history sentinel so native browser back reaches app state.
-onMounted(() => {
-  window.history.pushState({ shuffle: true }, "", window.location.href)
-  window.addEventListener("popstate", handlePopState)
-})
-
-// Removes the native-back listener when the root view is unmounted.
-onUnmounted(() => window.removeEventListener("popstate", handlePopState))
 </script>
 
 <template>
@@ -90,7 +79,7 @@ onUnmounted(() => window.removeEventListener("popstate", handlePopState))
     @pointercancel.capture="backSwipeStart = null"
   >
     <HomePage v-if="app.screen === 'home'" @navigate="app.navigate" />
-    <RandomPage v-else-if="app.screen === 'random'" />
+    <RandomPage v-else-if="app.screen === 'random'" @back="app.goBack" />
     <LibraryPage v-else-if="app.screen === 'library'" @back="app.navigate('home')" @select="app.selectSession" />
     <BoardSelectionPage
       v-else-if="app.screen === 'boards'"

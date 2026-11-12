@@ -245,6 +245,10 @@ body {
   touch-action: none;
 }
 
+.random-arrow-grid {
+  touch-action: none;
+}
+
 i {
   display: inline-flex;
   align-items: center;
